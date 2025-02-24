@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AlertCircle, Check } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Alert, AlertDescription } from '@/components/ui/alert'
+// import { Alert, AlertDescription } from '@/components/alert';
 
 const generatePhotoCode = (type) => {
   const prefix = type === 'Individual Portrait' ? 'WS-I-' : 'WS-G-';
