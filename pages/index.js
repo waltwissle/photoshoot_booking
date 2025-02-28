@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AlertCircle, Check } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert'
-// import { Alert, AlertDescription } from '@/components/alert';
 
 const generatePhotoCode = (type) => {
   const prefix = type === 'Individual Portrait' ? 'WS-I-' : 'WS-G-';
@@ -26,6 +25,11 @@ const PhotoRegistrationForm = () => {
 
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+
+  // Replace with your Google Apps Script URL
+  const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
 
   useEffect(() => {
     setFormData(prev => ({
@@ -69,15 +73,39 @@ const PhotoRegistrationForm = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validateForm();
     
     if (Object.keys(newErrors).length === 0) {
-      // Here you would typically send the data to your backend
-      console.log('Form submitted:', formData);
-      setSubmitted(true);
-      setErrors({});
+      setIsSubmitting(true);
+      setSubmitError(null);
+      
+      try {
+        // Send data to Google Sheets
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify(formData),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        const result = await response.json();
+        
+        if (result.result === 'success') {
+          console.log('Form submitted:', formData);
+          setSubmitted(true);
+          setErrors({});
+        } else {
+          throw new Error('Failed to submit form');
+        }
+      } catch (error) {
+        console.error('Error submitting form:', error);
+        setSubmitError('There was an error submitting your registration. Please try again later.');
+      } finally {
+        setIsSubmitting(false);
+      }
     } else {
       setErrors(newErrors);
     }
@@ -108,6 +136,15 @@ const PhotoRegistrationForm = () => {
     <div className="max-w-2xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-2">Photo Shoot Registration</h1>
       <div className="text-xl font-semibold text-green-600 mb-6">$30</div>
+
+      {submitError && (
+        <Alert className="mb-6 bg-red-50 border-red-200">
+          <AlertCircle className="h-5 w-5 text-red-600" />
+          <AlertDescription className="text-red-800">
+            {submitError}
+          </AlertDescription>
+        </Alert>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
@@ -211,8 +248,9 @@ const PhotoRegistrationForm = () => {
         <button
           type="submit"
           className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors"
+          disabled={isSubmitting}
         >
-          Submit Registration
+          {isSubmitting ? 'Submitting...' : 'Submit Registration'}
         </button>
       </form>
     </div>
@@ -220,3 +258,5 @@ const PhotoRegistrationForm = () => {
 };
 
 export default PhotoRegistrationForm;
+
+
