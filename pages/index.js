@@ -29,8 +29,7 @@ const PhotoRegistrationForm = () => {
   const [submitError, setSubmitError] = useState(null);
 
   // Replace with your Google Apps Script URL
-  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyr7FN8wiF1KyWDvQtZTIYsWyd2ePHU1vhWU569bV8O-YA3vhOhpwk-Xa6aZ6WX4oWO/exec';
-
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzdBYvTfIZhGt1P1eeP0UHGUWZBRrSFKlQ8FbEhIyWhazFbqa_VSzpmGdMLsprr1na7/exec'
   useEffect(() => {
     setFormData(prev => ({
       ...prev,
@@ -72,7 +71,9 @@ const PhotoRegistrationForm = () => {
       additionalEmails: newEmails
     }));
   };
-
+  console.log('Starting form submission...');
+  console.log('Form data:', formData);
+  console.log('Google Script URL:', GOOGLE_SCRIPT_URL);
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validateForm();
@@ -82,23 +83,35 @@ const PhotoRegistrationForm = () => {
       setSubmitError(null);
       
       try {
+        // Filter out empty additional emails
+        const cleanedFormData = {
+          ...formData,
+          additionalEmails: formData.additionalEmails.filter(email => email.trim() !== '')
+        };
+        
+        console.log('Sending data:', cleanedFormData);
+        console.log('To URL:', GOOGLE_SCRIPT_URL);
+        
         // Send data to Google Sheets
         const response = await fetch(GOOGLE_SCRIPT_URL, {
           method: 'POST',
-          body: JSON.stringify(formData),
+          body: JSON.stringify(cleanedFormData),
           headers: {
             'Content-Type': 'application/json'
-          }
+          },
+          mode: 'cors'
         });
         
+        console.log('Response status:', response.status);
         const result = await response.json();
+        console.log('Response data:', result);
         
         if (result.result === 'success') {
-          console.log('Form submitted:', formData);
+          console.log('Form submitted successfully:', cleanedFormData);
           setSubmitted(true);
           setErrors({});
         } else {
-          throw new Error('Failed to submit form');
+          throw new Error(result.error || 'Failed to submit form');
         }
       } catch (error) {
         console.error('Error submitting form:', error);
