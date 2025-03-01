@@ -75,7 +75,7 @@ const PhotoRegistrationForm = () => {
     if (Object.keys(newErrors).length === 0) {
       try {
         // Replace with your actual Google Form ID
-        const FORM_ID = 'YOUR_FORM_ID_HERE'; 
+        const FORM_ID = '1qo8XKZ8V9Z6qCVtb0q8vjFN4XFM4lgQo5n6RWvDGOnk'; 
         
         // Replace these with your actual entry IDs from the pre-filled link
         const NAME_ID = 'entry.123456789'; // Replace with your actual ID
