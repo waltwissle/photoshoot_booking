@@ -29,7 +29,7 @@ const PhotoRegistrationForm = () => {
   const [submitError, setSubmitError] = useState(null);
 
   // Replace with your Google Apps Script URL
-  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzdBYvTfIZhGt1P1eeP0UHGUWZBRrSFKlQ8FbEhIyWhazFbqa_VSzpmGdMLsprr1na7/exec'
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby-dt7TRmjkTu23LfRMhCTEjiYvzYsSRpSTHtrruaRh_JkOJIDhwR_HQ-6b86nD59FK/exec'
   useEffect(() => {
     setFormData(prev => ({
       ...prev,
