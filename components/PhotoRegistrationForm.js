@@ -68,50 +68,55 @@ const PhotoRegistrationForm = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     const newErrors = validateForm();
     
     if (Object.keys(newErrors).length === 0) {
       try {
-        // Replace these with your actual Google Form ID and entry IDs
-        const FORM_ID = 'YOUR_FORM_ID_HERE';
-        const NAME_ID = 'entry.123456';  // Replace with actual entry ID
-        const EMAIL_ID = 'entry.789012'; // Replace with actual entry ID
-        const CATEGORY_ID = 'entry.345678'; // Replace with actual entry ID
-        const CODE_ID = 'entry.901234'; // Replace with actual entry ID
-        const ADDITIONAL_EMAILS_ID = 'entry.567890'; // Replace with actual entry ID
-        const PHONE_ID = 'entry.123789'; // Replace with actual entry ID
-        const NOTES_ID = 'entry.456012'; // Replace with actual entry ID
+        // Replace with your actual Google Form ID
+        const FORM_ID = 'YOUR_FORM_ID_HERE'; 
         
-        // Construct the URL with form data
-        const url = new URL(`https://docs.google.com/forms/d/e/${FORM_ID}/formResponse`);
+        // Replace these with your actual entry IDs from the pre-filled link
+        const NAME_ID = 'entry.123456789'; // Replace with your actual ID
+        const EMAIL_ID = 'entry.987654321'; // Replace with your actual ID
+        const CATEGORY_ID = 'entry.123123123'; // Replace with your actual ID
+        const CODE_ID = 'entry.456456456'; // Replace with your actual ID
+        const ADDITIONAL_EMAILS_ID = 'entry.789789789'; // Replace with your actual ID
+        const PHONE_ID = 'entry.321321321'; // Replace with your actual ID
+        const NOTES_ID = 'entry.654654654'; // Replace with your actual ID
         
-        // Add parameters
-        url.searchParams.append(NAME_ID, formData.fullName);
-        url.searchParams.append(EMAIL_ID, formData.email);
-        url.searchParams.append(CATEGORY_ID, formData.shootCategory);
-        url.searchParams.append(CODE_ID, formData.photoCode);
-        url.searchParams.append(ADDITIONAL_EMAILS_ID, formData.additionalEmails.filter(email => email).join(', '));
-        url.searchParams.append(PHONE_ID, formData.phoneNumber);
-        url.searchParams.append(NOTES_ID, formData.notes);
+        // Construct the submission URL
+        const formUrl = `https://docs.google.com/forms/d/e/${FORM_ID}/formResponse`;
         
-        // Using an iframe to submit the form (avoids CORS issues)
+        // Create a hidden iframe to submit the form (avoids CORS issues)
         const iframe = document.createElement('iframe');
         iframe.style.display = 'none';
         document.body.appendChild(iframe);
-        iframe.src = url.toString();
         
-        // Set timeout to ensure the form submission is processed
+        // Build the query string with form data
+        const queryString = `?${NAME_ID}=${encodeURIComponent(formData.fullName)}` +
+          `&${EMAIL_ID}=${encodeURIComponent(formData.email)}` +
+          `&${CATEGORY_ID}=${encodeURIComponent(formData.shootCategory)}` +
+          `&${CODE_ID}=${encodeURIComponent(formData.photoCode)}` +
+          `&${ADDITIONAL_EMAILS_ID}=${encodeURIComponent(formData.additionalEmails.filter(Boolean).join(', '))}` +
+          `&${PHONE_ID}=${encodeURIComponent(formData.phoneNumber)}` +
+          `&${NOTES_ID}=${encodeURIComponent(formData.notes)}`;
+        
+        // Set the iframe source to submit the form
+        iframe.src = formUrl + queryString;
+        
+        // Remove the iframe after submission and show success message
         setTimeout(() => {
           document.body.removeChild(iframe);
           setSubmitted(true);
-          setErrors({});
         }, 1000);
         
       } catch (error) {
         console.error('Error submitting form:', error);
-        setErrors({ submission: 'There was an error submitting your registration. Please try again later.' });
+        setErrors({ 
+          submission: 'There was an error submitting your registration. Please try again later.' 
+        });
       }
     } else {
       setErrors(newErrors);
